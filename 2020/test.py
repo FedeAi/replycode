@@ -200,20 +200,24 @@ def max_dev_free():
 
 
 def find_n_best_matches(n, couple_points, dev_pandas_sorted):
-    idx = array[0][0]
-    matches = find_matches(idx, couple_points)
+    idx = couple_points[0][0]
+    matches = find_matches(idx,couple_points)
     n = n if len(matches) >= n else len(matches)
+    if n == 0:
+        return 0,[],couple_points
     for match in matches[:n]:
         couple_points.pop(match[1])
-        developers.drop(match[0][1], inplace=True)
-    return n, [array[0], matches[:n][0]], couple_points
-
+        dev_pandas_sorted.drop((match[0][0] != idx) * match[0][0] + (match[0][1] != idx) * match[0][1])
+    return n+1, [idx]+[(matches[n][0][0] != idx) * matches[n][0][0] + (matches[n][0][1] != idx) * matches[n][0][1] for n in range(n)], couple_points
 
 def find_matches(elemid, array):
-    ids = []
-    matches = [(elem, n) for n, elem in enumerate(array) if elem[1] == elemid]
-    # matches = sorted(matches, key=lambda x: x[2])
+    ids =[]
+    matches = [(elem,n) for n,elem in enumerate(array) if elem[0]==elemid or elem[1]==elemid]
+    #matches = sorted(matches, key=lambda x: x[2])
     return matches
+
+
+
 
 
 def set_as_done():
