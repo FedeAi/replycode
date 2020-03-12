@@ -85,12 +85,18 @@ def points_dev_dev(developer1 = Developer(), developer2 = Developer()):
             if developer1.skills[i] == developer2.skills[j]:
                 common_skills = common_skills + 1
     diff_skills = developer1.n_skills + developer2.n_skills - (common_skills * 2)
-    bonus_potential = developer1.bonus * developer2.bonus
+    if developer1.compagnia == developer2.compagnia:
+        bonus_potential = developer1.bonus * developer2.bonus
+    else:
+        bonus_potential = 0
     working_potential = common_skills * diff_skills
     points = bonus_potential + working_potential
     return points
 
 
 def points_pm(developer1, developer2):
-    bonus_potential = developer1.bonus * developer2.bonus
+    if developer1.compagnia == developer2.compagnia:
+        bonus_potential = developer1.bonus * developer2.bonus
+    else:
+        bonus_potential = 0
     return bonus_potential
