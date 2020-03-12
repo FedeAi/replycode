@@ -16,16 +16,20 @@ map_conv = {'#': 0, '_': 1, 'M': 2}
 def read_map(f):
     map_int = []
     map_c = []
+    map_id = []
+    map_type = []
     for x in range(H):
         line = f.readline()
         int_line = [map_conv[i] for i in list(line)[:-1]]
         char_line = list(line)[:-1]
+        zero_line = [0 for k in list(line)[:-1]]
         map_int.append(int_line)
         map_c.append(char_line)
-    return map_int, map_c
+        map_type.append(zero_line)
+    return map_int, map_c, map_id, map_type
 
 
-map_int, map_c = read_map(f)
+map_int, map_c, map_id, map_type = read_map(f)
 
 D = int(f.readline().split()[0])
 
@@ -219,25 +223,33 @@ def find_matches(elemid, array):
 def set_as_done():
     dev_free, x, y = max_dev_free()
     couple_points = find_couples()
-    number_of_matches, ids, couple_points = find_n_best_matches(dev_free, couple_points, dev_pandas_sorted)
+    number_of_matches, ids = find_n_best_matches(dev_free, couple_points, dev_pandas_sorted)
     map_int[x][y] = 0
     for id in ids:
         if map_int[x + 1][y] != 0:
             map_int[x + 1][y] = 0
             dev_pandas.iloc[id].x = x + 1
             dev_pandas.iloc[id].y = y
+            map_type[x + 1][y] = 1
+            map_id[x + 1][y] = id
         elif map_int[x][y + 1] != 0:
             map_int[x][y + 1] = 0
             dev_pandas.iloc[id].x = x
             dev_pandas.iloc[id].y = y + 1
+            map_type[x][y + 1] = 1
+            map_id[x][y + 1] = id
         elif map_int[x - 1][y] != 0:
             map_int[x - 1][y] = 0
             dev_pandas.iloc[id].x = x - 1
             dev_pandas.iloc[id].y = y
+            map_type[x - 1][y] = 1
+            map_id[x - 1][y] = id
         elif map_int[x][y - 1] != 0:
             map_int[x][y - 1] = 0
             dev_pandas.iloc[id].x = x
             dev_pandas.iloc[id].y = y - 1
+            map_type[x][y - 1] = 1
+            map_id[x][y - 1] = id
     return number_of_matches
 
 
@@ -245,17 +257,31 @@ def writeout():
     global dev_pandas
     with open("output.txt", "w") as outputtxt:
         for dev in dev_pandas:
-            if dev.x==None:
+            if dev.x == None:
                 outputtxt.write("X\n")
             else:
-                outputtxt.write(str(dev.x)+" "+str(dev.y)+"\n")
+                outputtxt.write(str(dev.x) + " " + str(dev.y) + "\n")
+
 
 dev_count = 0
+manager_count = 0
 for i in range(len(map_int)):
     for element in map_int[i]:
         if element == 1:
             dev_count = dev_count + 1
+        elif manager == 2:
+            manager_count = manager_count + 1
 
 while dev_count > 0:
     added = set_as_done()
     dev_count = set_as_done() - added()
+
+
+def find_best_mp():
+    for i in range(len(map_int)):
+        for j in range(len(map_int[0])):
+            if map_int == 2:
+                compagnia = funzionewalter(i, j)
+
+
+writeout()
