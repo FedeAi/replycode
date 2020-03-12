@@ -1,3 +1,5 @@
+import pandas as pd
+
 fn = "a_solar.txt"
 f = open(fn, "r")
 
@@ -74,4 +76,21 @@ dev_pandas = pd.DataFrame(d)
 
 dev_pandas_sorted = dev_pandas.sort_values('compagnia', ascending=False)
 pms_pandas_sorted = pms_pandas.sort_values('compagnia', ascending=False)
-    
+
+
+def points_dev_dev(developer1 = Developer(), developer2 = Developer()):
+    common_skills = 0
+    for i in range(developer1.n_skills):
+        for j in range(i, developer2.n_skills):
+            if developer1.skills[i] == developer2.skills[j]:
+                common_skills = common_skills + 1
+    diff_skills = developer1.n_skills + developer2.n_skills - (common_skills * 2)
+    bonus_potential = developer1.bonus * developer2.bonus
+    working_potential = common_skills * diff_skills
+    points = bonus_potential + working_potential
+    return points
+
+
+def points_pm(developer1, developer2):
+    bonus_potential = developer1.bonus * developer2.bonus
+    return bonus_potential
