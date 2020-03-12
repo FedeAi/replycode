@@ -59,4 +59,19 @@ for n in range(M):
     pm.compagnia = l_split[0]
     pm.bonus = int(l_split[1])
     pms.append(pm)
+
+compagnia = [pm.compagnia for pm in pms]
+bonus = [pm.bonus for pm in pms]
+d = {'compagnia': compagnia, 'bonus': bonus}
+pms_pandas = pd.DataFrame(d)
+
+compagnia = [dev.compagnia for dev in developers]
+bonus = [dev.bonus for dev in developers]
+n_skills = [dev.n_skills for dev in developers]
+skills = [dev.skills for dev in developers]
+d = {'compagnia': compagnia, 'bonus': bonus, 'n_skills': n_skills, 'skills':skills}
+dev_pandas = pd.DataFrame(d)
+
+dev_pandas_sorted = dev_pandas.sort_values('compagnia', ascending=False)
+pms_pandas_sorted = pms_pandas.sort_values('compagnia', ascending=False)
     
