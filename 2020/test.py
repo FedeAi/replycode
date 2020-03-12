@@ -221,9 +221,6 @@ def find_matches(elemid, array):
     return matches
 
 
-
-
-
 def set_as_done():
     dev_free, x, y = max_dev_free()
     couple_points = find_couples()
@@ -285,7 +282,13 @@ def find_best_mp():
     for i in range(len(map_int)):
         for j in range(len(map_int[0])):
             if map_int == 2:
-                compagnia = funzionewalter(i, j)
+                compa = funzionewalter(i, j)
+                lista = dev_pandas[dev_pandas['compagnia'] == compa].sort_values('bonus', ascending=False)
+                id = lista.index[0]
+                pms_pandas.iloc[id].x = i
+                pms_pandas.iloc[id].y = j
+                map_id[i][j] = id
+                map_type[i][j] = 2
 
 
 writeout()
