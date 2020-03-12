@@ -3,35 +3,40 @@ import pandas as pd
 fn = "a_solar.txt"
 f = open(fn, "r")
 
-#Line 1
+# Line 1
 l1 = f.readline()
 print(l1)
 
 W = int(l1.split()[0])
 H = int(l1.split()[1])
 
-map_conv = {'#' : 0, '_':1, 'M':2}
+map_conv = {'#': 0, '_': 1, 'M': 2}
+
+
 def read_map(f):
     map_int = []
     map_c = []
     for x in range(H):
         line = f.readline()
-        int_line = [map_conv[i] for i in list(line)[:-1] ] 
+        int_line = [map_conv[i] for i in list(line)[:-1]]
         char_line = list(line)[:-1]
         map_int.append(int_line)
         map_c.append(char_line)
     return map_int, map_c
 
+
 map_int, map_c = read_map(f)
 
-D = int(f.readline().split()[0]) 
+D = int(f.readline().split()[0])
+
 
 class Developer:
-    def __init__(self,compagnia="",bonus=0,n_skills=0, skills=[] ):
+    def __init__(self, compagnia="", bonus=0, n_skills=0, skills=[]):
         self.compagnia = compagnia
         self.bonus = bonus
         self.n_skills = n_skills
         self.skills = skills
+
 
 developers = []
 for n in range(D):
@@ -45,12 +50,14 @@ for n in range(D):
     developer.skills = l_split[3:]
     developers.append(developer)
 
+
 class ProjecManager:
-    def __init__(self,compagnia="",bonus=0):
+    def __init__(self, compagnia="", bonus=0):
         self.compagnia = compagnia
         self.bonus = bonus
 
-M = int(f.readline().split()[0]) 
+
+M = int(f.readline().split()[0])
 
 pms = []
 for n in range(M):
@@ -71,14 +78,14 @@ compagnia = [dev.compagnia for dev in developers]
 bonus = [dev.bonus for dev in developers]
 n_skills = [dev.n_skills for dev in developers]
 skills = [dev.skills for dev in developers]
-d = {'compagnia': compagnia, 'bonus': bonus, 'n_skills': n_skills, 'skills':skills}
+d = {'compagnia': compagnia, 'bonus': bonus, 'n_skills': n_skills, 'skills': skills}
 dev_pandas = pd.DataFrame(d)
 
 dev_pandas_sorted = dev_pandas.sort_values('compagnia', ascending=False)
 pms_pandas_sorted = pms_pandas.sort_values('compagnia', ascending=False)
 
 
-def points_dev_dev(developer1 = Developer(), developer2 = Developer()):
+def points_dev_dev(developer1=Developer(), developer2=Developer()):
     common_skills = 0
     for i in range(developer1.n_skills):
         for j in range(i, developer2.n_skills):
@@ -125,4 +132,22 @@ def points_pm_pandas(developer1, developer2):
         bonus_potential = 0
     return bonus_potential
 
+
 print(points_dev_dev_pandas(dev_pandas_sorted.iloc[0], dev_pandas_sorted.iloc[1]))
+
+
+def sortSecond(val):
+    return val[2]
+
+
+couple_points = []
+
+
+def find_couples():
+    for i in range(len(dev_pandas_sorted)):
+        for j in range(i, len(dev_pandas_sorted)):
+            points = points_dev_dev_pandas(dev_pandas_sorted.iloc[i], dev_pandas_sorted.iloc[j])
+            couple_points.append([dev_pandas_sorted.index[i], dev_pandas_sorted.index[j], points, 0])
+    couple_points.sort(key=sortSecond)
+
+find_couples() # Call the function
