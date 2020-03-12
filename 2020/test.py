@@ -204,21 +204,42 @@ def max_dev_free():
 
 
 def find_n_best_matches(n, couple_points, dev_pandas_sorted):
+    if len(couple_points)==0:
+        return 0,[],couple_points
     idx = couple_points[0][0]
     matches = find_matches(idx,couple_points)
     n = n if len(matches) >= n else len(matches)
     if n == 0:
         return 0,[],couple_points
     for match in matches[:n]:
-        couple_points.pop(match[1])
+        #couple_points.pop(match[1])
+        #print(match[1])
         dev_pandas_sorted.drop((match[0][0] != idx) * match[0][0] + (match[0][1] != idx) * match[0][1])
-    return n+1, [idx]+[(matches[n][0][0] != idx) * matches[n][0][0] + (matches[n][0][1] != idx) * matches[n][0][1] for n in range(n)], couple_points
+    output_id = [idx]+[(matches[n][0][0] != idx) * matches[n][0][0] + (matches[n][0][1] != idx) * matches[n][0][1] for n in range(n)]
+    temp = []
+    for j in couple_points:
+        if (j[0] not in output_id) and (j[1] not in output_id):
+            temp.append(j)
+    couple_points = temp
+    #for p,couple in enumerate(couple_points):
+    #    if (couple[0] in output_id) or (couple[1] in output_id):
+    #        print(p)
+    #        couple_points.pop(p)
+    return n+1, output_id, couple_points
 
 def find_matches(elemid, array):
     ids =[]
-    matches = [(elem,n) for n,elem in enumerate(array) if elem[0]==elemid or elem[1]==elemid]
+    matches = []
+    i = 0
+    for elem in array:
+        if elem[0]==elemid or elem[1]==elemid:
+            matches.append((elem,i))
+        i = i+1
+        
+    #matches = [(elem,n) for n,elem in enumerate(array) if elem[0]==elemid or elem[1]==elemid]
     #matches = sorted(matches, key=lambda x: x[2])
     return matches
+ò re
 
 
 def set_as_done():
