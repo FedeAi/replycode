@@ -203,6 +203,23 @@ def max_dev_free():
     return dev_free, x, y
 
 
+def find_n_best_matches(n, couple_points, dev_pandas_sorted):
+    idx = array[0][0]
+    matches = find_matches(idx, couple_points)
+    n = n if len(matches) >= n else len(matches)
+    for match in matches[:n]:
+        couple_points.pop(match[1])
+        developers.drop(match[0][1], inplace=True)
+    return n, [array[0], matches[:n][0]], couple_points
+
+
+def find_matches(elemid, array):
+    ids = []
+    matches = [(elem, n) for n, elem in enumerate(array) if elem[1] == elemid]
+    # matches = sorted(matches, key=lambda x: x[2])
+    return matches
+
+
 def set_as_done():
     dev_free, x, y = max_dev_free()
     global couple_points
@@ -225,20 +242,3 @@ def set_as_done():
             map_int[x][y - 1] = 0
             dev_pandas.iloc[id].x = x
             dev_pandas.iloc[id].y = y - 1
-
-find_couples() # Call the function
-
-def find_n_best_matches(n, couple_points, dev_pandas_sorted):
-    idx = array[0][0]
-    matches = find_matches(idx,couple_points)
-    n = n if len(matches) >= n else len(matches)
-    for match in matches[:n]:
-        couple_points.pop(match[1])
-        developers.drop(match[0][1], inplace=True)
-    return n, [array[0],matches[:n][0]], couple_points
-
-def find_matches(elemid, array):
-    ids =[]
-    matches = [(elem,n) for n,elem in enumerate(array) if elem[1]==elemid]
-    #matches = sorted(matches, key=lambda x: x[2])
-    return matches
