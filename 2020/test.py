@@ -1,6 +1,6 @@
 import pandas as pd
 
-fn = "a_solar.txt"
+fn = "b_dream.txt"
 f = open(fn, "r")
 
 # Line 1
@@ -85,8 +85,8 @@ skills = [dev.skills for dev in developers]
 d = {'compagnia': compagnia, 'bonus': bonus, 'n_skills': n_skills, 'skills': skills}
 dev_pandas = pd.DataFrame(d)
 
-dev_pandas_sorted = dev_pandas.sort_values('compagnia', ascending=False)
-pms_pandas_sorted = pms_pandas.sort_values('compagnia', ascending=False)
+dev_pandas_sorted = dev_pandas.sort_values('n_skills', ascending=False)
+pms_pandas_sorted = pms_pandas.sort_values('bonus', ascending=False)
 
 
 def points_dev_dev(developer1=Developer(), developer2=Developer()):
@@ -144,18 +144,14 @@ def sortSecond(val):
     return val[2]
 
 
-couple_points = []
-
-
 def find_couples():
-    for i in range(len(dev_pandas_sorted)):
-        for j in range(i, len(dev_pandas_sorted)):
+    couple_points = []
+    for i in range(0, 5):
+        for j in range(i + 1, 5):
             points = points_dev_dev_pandas(dev_pandas_sorted.iloc[i], dev_pandas_sorted.iloc[j])
             couple_points.append([dev_pandas_sorted.index[i], dev_pandas_sorted.index[j], points, 0])
-    couple_points.sort(key=sortSecond)
-
-
-find_couples()  # Call the function
+    couple_points.sort(key=sortSecond, reverse=True)
+    return couple_points
 
 
 def count_n(x, y):
@@ -190,11 +186,11 @@ def max_dev_free():
     x = 0
     y = 0
     find = False
-    for i in range(map_int.size()):
+    for i in range(len(map_int)):
         if find:
             break
-        for j in range(map_int[0].size()):
-            n_developer, n_manager = find_n(i, j)
+        for j in range(len(map_int[0])):
+            n_developer, n_manager = count_n(i, j)
             if n_developer == 4:
                 find = True
                 x = i
@@ -222,7 +218,7 @@ def find_matches(elemid, array):
 
 def set_as_done():
     dev_free, x, y = max_dev_free()
-    global couple_points
+    couple_points = find_couples()
     number_of_matches, ids, couple_points = find_n_best_matches(dev_free, couple_points, dev_pandas_sorted)
     map_int[x][y] = 0
     for id in ids:
@@ -242,3 +238,24 @@ def set_as_done():
             map_int[x][y - 1] = 0
             dev_pandas.iloc[id].x = x
             dev_pandas.iloc[id].y = y - 1
+    return number_of_matches
+
+
+def writeout():
+    global dev_pandas
+    with open("output.txt", "w") as outputtxt:
+        for dev in dev_pandas:
+            if dev.x==None:
+                outputtxt.write("X\n")
+            else:
+                outputtxt.write(str(dev.x)+" "+str(dev.y)+"\n")
+
+dev_count = 0
+for i in range(len(map_int)):
+    for element in map_int[i]:
+        if element == 1:
+            dev_count = dev_count + 1
+
+while dev_count > 0:
+    added = set_as_done()
+    dev_count = set_as_done() - added()
