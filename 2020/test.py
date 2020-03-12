@@ -100,3 +100,29 @@ def points_pm(developer1, developer2):
     else:
         bonus_potential = 0
     return bonus_potential
+
+
+def points_dev_dev_pandas(developer1, developer2):
+    common_skills = 0
+    for i in range(developer1['n_skills']):
+        for j in range(i, developer2['n_skills']):
+            if developer1['skills'][i] == developer2['skills'][j]:
+                common_skills = common_skills + 1
+    diff_skills = developer1['n_skills'] + developer2['n_skills'] - (common_skills * 2)
+    if developer1['compagnia'] == developer2['compagnia']:
+        bonus_potential = developer1['bonus'] * developer2['bonus']
+    else:
+        bonus_potential = 0
+    working_potential = common_skills * diff_skills
+    points = bonus_potential + working_potential
+    return points
+
+
+def points_pm_pandas(developer1, developer2):
+    if developer1['compagnia'] == developer2['compagnia']:
+        bonus_potential = developer1['bonus'] * developer2['bonus']
+    else:
+        bonus_potential = 0
+    return bonus_potential
+
+print(points_dev_dev_pandas(dev_pandas_sorted.iloc[0], dev_pandas_sorted.iloc[1]))
