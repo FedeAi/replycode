@@ -36,6 +36,8 @@ class Developer:
         self.bonus = bonus
         self.n_skills = n_skills
         self.skills = skills
+        self.x = None
+        self.y = None
 
 
 developers = []
@@ -55,6 +57,8 @@ class ProjecManager:
     def __init__(self, compagnia="", bonus=0):
         self.compagnia = compagnia
         self.bonus = bonus
+        self.x = None
+        self.y = None
 
 
 M = int(f.readline().split()[0])
@@ -149,6 +153,78 @@ def find_couples():
             points = points_dev_dev_pandas(dev_pandas_sorted.iloc[i], dev_pandas_sorted.iloc[j])
             couple_points.append([dev_pandas_sorted.index[i], dev_pandas_sorted.index[j], points, 0])
     couple_points.sort(key=sortSecond)
+
+
+find_couples()  # Call the function
+
+
+def count_n(x, y):
+    global map_int
+    dev = 0
+    man = 0
+    if x > 0:
+        if map_int[x - 1][y] == 1:
+            dev = dev + 1
+        elif map_int[x - 1][y] == 2:
+            man = man + 1
+    if y > 0:
+        if map_int[x][y - 1] == 1:
+            dev = dev + 1
+        elif map_int[x][y - 1] == 2:
+            man = man + 1
+    if y < len(map_int[0]) - 1:
+        if map_int[x][y + 1] == 1:
+            dev = dev + 1
+        elif map_int[x][y + 1] == 2:
+            man = man + 1
+    if x < len(map_int) - 1:
+        if map_int[x + 1][y] == 1:
+            dev = dev + 1
+        elif map_int[x + 1][y] == 2:
+            man = man + 1
+    return dev, man
+
+
+def max_dev_free():
+    dev_free = 0
+    x = 0
+    y = 0
+    find = False
+    for i in range(map_int.size()):
+        if find:
+            break
+        for j in range(map_int[0].size()):
+            n_developer, n_manager = find_n(i, j)
+            if n_developer == 4:
+                find = True
+                x = i
+                y = j
+                break
+    return dev_free, x, y
+
+
+def set_as_done():
+    dev_free, x, y = max_dev_free()
+    global couple_points
+    number_of_matches, ids, couple_points = find_n_best_matches(dev_free, couple_points, dev_pandas_sorted)
+    map_int[x][y] = 0
+    for id in ids:
+        if map_int[x + 1][y] != 0:
+            map_int[x + 1][y] = 0
+            dev_pandas.iloc[id].x = x + 1
+            dev_pandas.iloc[id].y = y
+        elif map_int[x][y + 1] != 0:
+            map_int[x][y + 1] = 0
+            dev_pandas.iloc[id].x = x
+            dev_pandas.iloc[id].y = y + 1
+        elif map_int[x - 1][y] != 0:
+            map_int[x - 1][y] = 0
+            dev_pandas.iloc[id].x = x - 1
+            dev_pandas.iloc[id].y = y
+        elif map_int[x][y - 1] != 0:
+            map_int[x][y - 1] = 0
+            dev_pandas.iloc[id].x = x
+            dev_pandas.iloc[id].y = y - 1
 
 find_couples() # Call the function
 
