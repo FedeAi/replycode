@@ -151,3 +151,18 @@ def find_couples():
     couple_points.sort(key=sortSecond)
 
 find_couples() # Call the function
+
+def find_n_best_matches(n, couple_points, dev_pandas_sorted):
+    idx = array[0][0]
+    matches = find_matches(idx,couple_points)
+    n = n if len(matches) >= n else len(matches)
+    for match in matches[:n]:
+        couple_points.pop(match[1])
+        developers.drop(match[0][1], inplace=True)
+    return n, [array[0],matches[:n][0]], couple_points
+
+def find_matches(elemid, array):
+    ids =[]
+    matches = [(elem,n) for n,elem in enumerate(array) if elem[1]==elemid]
+    #matches = sorted(matches, key=lambda x: x[2])
+    return matches
