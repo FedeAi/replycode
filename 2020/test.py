@@ -1,6 +1,6 @@
 import pandas as pd
 
-fn = "b_dream.txt"
+fn = "a_solar.txt"
 f = open(fn, "r")
 
 # Line 1
@@ -26,6 +26,7 @@ def read_map(f):
         map_int.append(int_line)
         map_c.append(char_line)
         map_type.append(zero_line)
+        map_id.append(zero_line)
     return map_int, map_c, map_id, map_type
 
 
@@ -86,7 +87,9 @@ compagnia = [dev.compagnia for dev in developers]
 bonus = [dev.bonus for dev in developers]
 n_skills = [dev.n_skills for dev in developers]
 skills = [dev.skills for dev in developers]
-d = {'compagnia': compagnia, 'bonus': bonus, 'n_skills': n_skills, 'skills': skills}
+x = [None for dev in developers]
+y = [None for dev in developers]
+d = {'compagnia': compagnia, 'bonus': bonus, 'n_skills': n_skills, 'skills': skills, 'x' : x, 'y' : y}
 dev_pandas = pd.DataFrame(d)
 
 dev_pandas_sorted = dev_pandas.sort_values('n_skills', ascending=False)
@@ -186,7 +189,7 @@ def count_n(x, y):
 
 
 def max_dev_free():
-    dev_free = 0
+    dev_free = 1
     x = 0
     y = 0
     find = False
@@ -195,8 +198,9 @@ def max_dev_free():
             break
         for j in range(len(map_int[0])):
             n_developer, n_manager = count_n(i, j)
-            if n_developer == 4:
+            if n_developer == 2:
                 find = True
+                dev_free = 2
                 x = i
                 y = j
                 break
@@ -245,7 +249,7 @@ def find_matches(elemid, array):
 def set_as_done():
     dev_free, x, y = max_dev_free()
     couple_points = find_couples()
-    number_of_matches, ids = find_n_best_matches(dev_free, couple_points, dev_pandas_sorted)
+    number_of_matches, ids, couples = find_n_best_matches(dev_free, couple_points, dev_pandas_sorted)
     map_int[x][y] = 0
     for id in ids:
         if map_int[x + 1][y] != 0:
@@ -278,11 +282,11 @@ def set_as_done():
 def writeout():
     global dev_pandas
     with open("output.txt", "w") as outputtxt:
-        for dev in dev_pandas:
-            if dev.x == None:
+        for i in range(len(dev_pandas)):
+            if dev_pandas.iloc[i].x is None:
                 outputtxt.write("X\n")
             else:
-                outputtxt.write(str(dev.x) + " " + str(dev.y) + "\n")
+                outputtxt.write(str(dev_pandas.iloc[i].x) + " " + str(dev_pandas.iloc[i].y) + "\n")
 
 
 dev_count = 0
@@ -291,19 +295,66 @@ for i in range(len(map_int)):
     for element in map_int[i]:
         if element == 1:
             dev_count = dev_count + 1
-        elif manager == 2:
+        elif element == 2:
             manager_count = manager_count + 1
 
 while dev_count > 0:
     added = set_as_done()
-    dev_count = set_as_done() - added()
+    dev_count = dev_count - added
+
+
+def best_comp_man(x, y):
+    global map_type
+    global map_id
+    global dev_pandas_sorted
+    global pms_pandas_sorted
+    if x > 0 and y > 0 and x < len(map_type) - 1 and y < len(map_type[0]) - 1:
+        if map_type[x - 1][y] == 1:
+            bn = dev_pandas_sorted.iloc[map_id[x - 1][y]].bonus
+        elif map_type[x - 1][y] == 2:
+            bn = pms_pandas_sorted.iloc[map_id[x - 1][y]].bonus
+        if map_type[x + 1][y] == 1:
+            bs = dev_pandas_sorted.iloc[map_id[x + 1][y]].bonus
+        elif map_type[x + 1][y] == 2:
+            bs = pms_pandas_sorted.iloc[map_id[x + 1][y]].bonus
+        if map_type[x][y + 1] == 1:
+            be = dev_pandas_sorted.iloc[map_id[x][y + 1]].bonus
+        elif map_type[x][y + 1] == 2:
+            be = pms_pandas_sorted.iloc[map_id[x][y + 1]].bonus
+        if map_type[x][y - 1] == 1:
+            bo = dev_pandas_sorted.iloc[map_id[x][y - 1]].bonus
+        elif map_type[x][y - 1] == 2:
+            bo = pms_pandas_sorted.iloc[map_id[x][y - 1]].bonus
+
+        if bn >= be and bn >= bs and bn >= bo:
+            if map_type[x - 1][y] == 1:
+                return dev_pandas_sorted.iloc[map_id[x - 1][y]].compagnia
+            elif map_type[x - 1][y] == 2:
+                return pms_pandas_sorted.iloc[map_id[x - 1][y]].compagnia
+        if be >= bs and be >= bo and be >= bn:
+            if map_type[x][y + 1] == 1:
+                return dev_pandas_sorted.iloc[map_id[x][y + 1]].compagnia
+            elif map_type[x][y + 1] == 2:
+                return pms_pandas_sorted.iloc[map_id[x][y + 1]].compagnia
+        if bo >= bs and bo >= be and bo >= bn:
+            if map_type[x][y - 1] == 1:
+                return dev_pandas_sorted.iloc[map_id[x][y - 1]].compagnia
+            elif map_type[x][y - 1] == 2:
+                return pms_pandas_sorted.iloc[map_id[x][y - 1]].compagnia
+        else:
+            if map_type[x + 1][y] == 1:
+                return dev_pandas_sorted.iloc[map_id[x + 1][y]].compagnia
+            elif map_type[x + 1][y] == 2:
+                return pms_pandas_sorted.iloc[map_id[x + 1][y]].compagnia
+
+    return None
 
 
 def find_best_mp():
     for i in range(len(map_int)):
         for j in range(len(map_int[0])):
             if map_int == 2:
-                compa = funzionewalter(i, j)
+                compa = best_comp_man(i, j)
                 lista = dev_pandas[dev_pandas['compagnia'] == compa].sort_values('bonus', ascending=False)
                 id = lista.index[0]
                 pms_pandas.iloc[id].x = i
@@ -312,4 +363,6 @@ def find_best_mp():
                 map_type[i][j] = 2
 
 
+print(dev_pandas.iloc[0].compagnia)
+print(dev_pandas.iloc[0]['x'])
 writeout()
